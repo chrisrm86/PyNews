@@ -17,7 +17,8 @@ from datetime import *
 
 def get_news(xml_news_url):
     actual_date = datetime.now()
-    date_format = actual_date.strftime('%d / %m / %y')              # Add hour, minutes and seconds ->  %H:%M:%S'
+    date_format = actual_date.strftime('%d / %m / %y')
+    hour_format = actual_date.strftime('%H:%M:%S')
     context = ssl._create_unverified_context()
     client = urlopen(xml_news_url, context=context)
     xml_page = client.read()
@@ -27,33 +28,35 @@ def get_news(xml_news_url):
     news_list = from_page_soup.find_all("item")
 
     line_separator =  "-"*50
-    print(line_separator + "NEWS" + line_separator + '\n')
-    print("Date: {} \n".format(date_format))
-    print(line_separator + line_separator)
+    print('\n' + " " * 25 + "NEWS" + '\n')
+    print("Date: {}".format(date_format) + ' '*18 + "Hour: {} \n".format(hour_format))
+    print(line_separator + '\n')
 
     for new in news_list:
-        print(f'new title: {new.title.text}')
-        print(f'new link: {new.link.text}')
-        print(f'new publication date: {new.pubDate.text}')
-        print(line_separator + "\n\n")
+        print(f'Title: {new.title.text}' + '\n')
+        print(f'Link: {new.link.text}'+ '\n')
+        print(f'Publication date: {new.pubDate.text}')
+        print(line_separator + '\n')
 
     def print_to_file(news_list):
         user_input = str(input("Print news in a text file? y/n: "))
         if user_input == 'y' or user_input == 'Y':
             filename = 'NEWS.txt'
             nf = open(filename, 'w+')
-            nf.write("NEWS of {}\n\n\n".format(date_format))
+            nf.write(' '*25 + 'NEWS' + '\n')
+            nf.write("Date: {}".format(date_format) + ' ' * 18 + "Hour: {} \n".format(hour_format))
             nf.write(line_separator + '\n')
             for new in news_list:
-                nf.write(f'new title: {new.title.text} \n')
-                nf.write(f'new link: {new.link.text} \n')
-                nf.write(f'new publication date: {new.pubDate.text} \n\n')
+                nf.write(f'Title: {new.title.text} \n')
+                nf.write(f'Link: {new.link.text} \n')
+                nf.write(f'Publication date: {new.pubDate.text} \n\n')
                 nf.write(line_separator + "\n\n")
             nf.close()
         elif user_input == 'n' or user_input == 'N':
             pass
         else:
             return print_to_file(news_list)
+        print("News saved in 'NEWS.txt' file")
 
     print_to_file(news_list)
 
